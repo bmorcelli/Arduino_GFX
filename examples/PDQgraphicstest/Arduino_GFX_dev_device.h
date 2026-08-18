@@ -2,6 +2,7 @@
 // #define BLOCKCODELAB_ARCADE_LITE
 // #define DLC35010R // or called "Elecrow ESP Terminal with 3.5inch Parallel RGB Capacitive Touch Display (ILI9488)"
 // #define DRAGON_RADAR
+// #define ELECROW_CROWPANEL_ADVANCED_7_P4 // 1024x600 MIPI-DSI, ESP32-P4 (EK79007 panel)
 // #define ESP32_1732S019
 // #define ESP32_2424012
 // #define ESP32_2432S028
@@ -135,6 +136,23 @@ Arduino_ESP32RGBPanel *rgbpanel = new Arduino_ESP32RGBPanel(
 Arduino_RGB_Display *gfx = new Arduino_RGB_Display(
     480 /* width */, 480 /* height */, rgbpanel, 0 /* rotation */, true /* auto_flush */,
     bus, GFX_NOT_DEFINED /* RST */, st7701_type6_init_operations, sizeof(st7701_type6_init_operations));
+
+#elif defined(ELECROW_CROWPANEL_ADVANCED_7_P4)
+#define GFX_DEV_DEVICE ELECROW_CROWPANEL_ADVANCED_7_P4
+#define GFX_BL 31 // LCD_BK_EN: boost converter enable, PWM-dimmable
+#define DEV_DEVICE_INIT()                                                                 \
+    {                                                                                     \
+        pinMode(29 /* LCD_BK_POWER */, OUTPUT);                                           \
+        digitalWrite(29 /* LCD_BK_POWER */, LOW); /* enable boost VIN before GFX_BL does anything */ \
+    }
+#define DSI_PANEL
+Arduino_ESP32DSIPanel *dsipanel = new Arduino_ESP32DSIPanel(
+    10 /* hsync_pulse_width */, 160 /* hsync_back_porch */, 160 /* hsync_front_porch */,
+    1 /* vsync_pulse_width */, 23 /*vsync_back_porch  */, 12 /* vsync_front_porch */,
+    52000000 /* prefer_speed */, 1000 /* lane_bit_rate (Mbps); this panel needs 1000, not the 750 default */);
+Arduino_DSI_Display *gfx = new Arduino_DSI_Display(
+    1024 /* width */, 600 /* height */, dsipanel, 0 /* rotation */, true /* auto_flush */,
+    41 /* RST */, ek79007_init_operations, sizeof(ek79007_init_operations) / sizeof(lcd_init_cmd_t));
 
 #elif defined(ESP32_1732S019)
 #define GFX_DEV_DEVICE ESP32_1732S019

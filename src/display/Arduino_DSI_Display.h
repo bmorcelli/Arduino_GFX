@@ -543,6 +543,22 @@ static const lcd_init_cmd_t hi8561_init_operations[] = {
     //============ Gamma END===========
 };
 
+
+static const lcd_init_cmd_t ek79007_init_operations[] = {
+    //  {cmd, { data }, data_size, delay_ms}
+    // Ported from Espressif's esp_lcd_ek79007 component (vendor_specific_init_default):
+    // https://github.com/espressif/esp-bsp/blob/master/components/lcd/esp_lcd_ek79007/esp_lcd_ek79007.c
+    {0xB2, (uint8_t[]){0x10}, 1, 0}, // PAD control: 2 DSI data lanes
+    {0x80, (uint8_t[]){0x8B}, 1, 0},
+    {0x81, (uint8_t[]){0x78}, 1, 0},
+    {0x82, (uint8_t[]){0x84}, 1, 0},
+    {0x83, (uint8_t[]){0x88}, 1, 0},
+    {0x84, (uint8_t[]){0xA8}, 1, 0},
+    {0x85, (uint8_t[]){0xE3}, 1, 0},
+    {0x86, (uint8_t[]){0x88}, 1, 0},
+    {0x11, (uint8_t[]){0x00}, 0, 120}, // Sleep Out - 120ms delay
+};
+
 #if !defined(CONFIG_SCREEN_PIXEL_FORMAT_RGB565) && !defined(CONFIG_SCREEN_PIXEL_FORMAT_RGB888)
 #define CONFIG_SCREEN_PIXEL_FORMAT_RGB565 1
 #endif
